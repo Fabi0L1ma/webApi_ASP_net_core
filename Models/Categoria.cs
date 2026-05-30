@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebApi.Models
 {
-    [Table("Categorias")]
+    [Table("categorias")]
     public class Categoria
     {
         public Categoria()

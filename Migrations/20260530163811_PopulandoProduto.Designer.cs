@@ -12,8 +12,8 @@ using WebApi.Context;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260526042153_PopulaCategoria")]
-    partial class PopulaCategoria
+    [Migration("20260530163811_PopulandoProduto")]
+    partial class PopulandoProduto
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,65 +29,79 @@ namespace WebApi.Migrations
                 {
                     b.Property<int>("CategoriaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("categoria_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoriaID"));
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("image_url");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("nome");
 
-                    b.HasKey("CategoriaID");
+                    b.HasKey("CategoriaID")
+                        .HasName("pk_categorias");
 
-                    b.ToTable("Categorias");
+                    b.ToTable("categorias", (string)null);
                 });
 
             modelBuilder.Entity("WebApi.Models.Produto", b =>
                 {
                     b.Property<int>("ProdutoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("produto_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProdutoId"));
 
                     b.Property<int>("CategoriaId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("categoria_id");
 
                     b.Property<DateTime>("DataCadastro")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("data_cadastro");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("descricao");
 
                     b.Property<float>("Estoque")
-                        .HasColumnType("real");
+                        .HasColumnType("real")
+                        .HasColumnName("estoque");
 
                     b.Property<string>("ImagemUrl")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("imagem_url");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("nome");
 
                     b.Property<float>("Preco")
-                        .HasColumnType("decimal(10, 2)");
+                        .HasColumnType("decimal(10, 2)")
+                        .HasColumnName("preco");
 
-                    b.HasKey("ProdutoId");
+                    b.HasKey("ProdutoId")
+                        .HasName("pk_produtos");
 
-                    b.HasIndex("CategoriaId");
+                    b.HasIndex("CategoriaId")
+                        .HasDatabaseName("ix_produtos_categoria_id");
 
-                    b.ToTable("Produtos");
+                    b.ToTable("produtos", (string)null);
                 });
 
             modelBuilder.Entity("WebApi.Models.Produto", b =>
@@ -96,7 +110,8 @@ namespace WebApi.Migrations
                         .WithMany("Produtos")
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_produtos_categorias_categoria_id");
 
                     b.Navigation("Categoria");
                 });
