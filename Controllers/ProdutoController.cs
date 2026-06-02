@@ -54,7 +54,7 @@ namespace WebApi.Controllers
             
             _context.SaveChanges();
 
-            return new CreatedAtActionResult("ObterProduto", null, new { id = produto.ProdutoId }, produto);
+            return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
 
         [HttpPut("{id:int}")]
@@ -69,7 +69,6 @@ namespace WebApi.Controllers
             _context.SaveChanges();
 
             return Ok(produto);
-
         }
 
         [HttpDelete("{id:int}")]
