@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Context;
 using WebApi.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApi.Controllers
 {
@@ -20,33 +20,55 @@ namespace WebApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
-            var categoria = this._context.Categorias.ToList();
-
-            if(categoria is null)
+            try
             {
-                return NotFound("Categoria não encontrada.");
-            }
+                var categoria = this._context.Categorias.ToList();
 
-            return categoria;
+                if (categoria is null)
+                {
+                    return NotFound("Categorias não encontrada.");
+                }
+
+                return categoria;
+
+            }
+            catch(Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
+            }
         }
 
-        [HttpGet("{id:int}", Name = "ObterCategoria")]
+        [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
         public ActionResult<Categoria> GetId(int id)
         {
-            var categoria = this._context.Categorias.FirstOrDefault(c => c.CategoriaID == id);
-
-            if(categoria is null)
+            try
             {
-                return NotFound("Categoria não encontrada.");
-            }
+                var categoria = this._context.Categorias.FirstOrDefault(c => c.CategoriaID == id);
 
-            return categoria;
+                if (categoria is null)
+                {
+                    return NotFound("Categoria não encontrada.");
+                }
+
+                return categoria;
+            }
+            catch(Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
+            }
         }
 
         [HttpGet("Produtos")]
         public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
         {
-            return this._context.Categorias.Include(p => p.Produtos).ToList();
+            try
+            {
+                return this._context.Categorias.Include(p => p.Produtos).ToList();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
+            }
         }
 
         [HttpPost]
@@ -64,7 +86,7 @@ namespace WebApi.Controllers
             return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaID }, categoria);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int:min(1)}")]
         public ActionResult Put(int id, Categoria categoria)
         {
             if(id != categoria.CategoriaID)
