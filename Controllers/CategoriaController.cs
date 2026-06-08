@@ -18,11 +18,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
             try
             {
-                var categoria = this._context.Categorias.ToList();
+                var categoria = await this._context.Categorias.ToListAsync();
 
                 if (categoria is null)
                 {
@@ -39,11 +39,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
-        public ActionResult<Categoria> GetId(int id)
+        public async Task<ActionResult<Categoria>> GetId(int id)
         {
             try
             {
-                var categoria = this._context.Categorias.FirstOrDefault(c => c.CategoriaID == id);
+                var categoria = await this._context.Categorias.FirstOrDefaultAsync(c => c.CategoriaID == id);
 
                 if (categoria is null)
                 {
@@ -52,18 +52,18 @@ namespace WebApi.Controllers
 
                 return categoria;
             }
-            catch(Exception)
+            catch(Exception  
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
             }
         }
 
         [HttpGet("Produtos")]
-        public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
         {
             try
             {
-                return this._context.Categorias.Include(p => p.Produtos).ToList();
+                return await this._context.Categorias.Include(p => p.Produtos).ToListAsync();
             }
             catch (Exception)
             {
