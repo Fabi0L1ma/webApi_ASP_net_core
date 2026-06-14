@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Context;
 using WebApi.Models;
@@ -18,9 +19,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public async Task<ActionResult<IEnumerable<Produto>>> Get()
         {
-            var produtos = _context.Produtos.ToList();
+            var produtos = await _context.Produtos.ToListAsync();
 
             if(produtos is null)
             {
@@ -31,9 +32,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id:int}", Name="ObterProduto")]
-        public ActionResult<Produto> GetId(int id)
+        public async Task<ActionResult<Produto>> GetId(int id, [BindRequired] string nome)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var nomeProduto = nome;
+            
+            var produto = await _context.Produtos.FirstOrDefaultAsync(p => p.ProdutoId == id);
 
             if(produto is null)
             {
@@ -44,21 +47,22 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(Produto produto)
+        public async Task<ActionResult> Post(Produto produto)
         {
             if(produto is null)
             {
                 return BadRequest();
             }
+            
             _context.Produtos.Add(produto);
             
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produto)
+        public async Task<ActionResult> Put(int id, Produto produto)
         {
             if(id != produto.ProdutoId)
             {
@@ -66,15 +70,16 @@ namespace WebApi.Controllers
             }
 
             _context.Entry(produto).State = EntityState.Modified;
-            _context.SaveChanges();
+            
+            await _context.SaveChangesAsync();
 
             return Ok(produto);
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var produto = await _context.Produtos.FirstOrDefaultAsync(p => p.ProdutoId == id);
 
             if(produto is null)
             {
@@ -82,7 +87,8 @@ namespace WebApi.Controllers
             }
 
             _context.Produtos.Remove(produto);
-            _context.SaveChanges();
+
+            await _context.SaveChangesAsync();
 
             return Ok(produto);
         }

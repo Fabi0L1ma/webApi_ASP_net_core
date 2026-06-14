@@ -52,7 +52,7 @@ namespace WebApi.Controllers
 
                 return categoria;
             }
-            catch(Exception  
+            catch(Exception)  
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
             }
@@ -72,7 +72,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(Categoria categoria)
+        public async Task<ActionResult> Post(Categoria categoria)
         {
             if(categoria is null)
             {
@@ -81,13 +81,13 @@ namespace WebApi.Controllers
 
             this._context.Categorias.Add(categoria);
             
-            this._context.SaveChanges();
+            await this._context.SaveChangesAsync();
 
             return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaID }, categoria);
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public ActionResult Put(int id, Categoria categoria)
+        public async Task<ActionResult> Put(int id, Categoria categoria)
         {
             if(id != categoria.CategoriaID)
             {
@@ -95,13 +95,14 @@ namespace WebApi.Controllers
             }
 
             this._context.Entry(categoria).State = EntityState.Modified;
-            this._context.SaveChanges();
+
+            await this._context.SaveChangesAsync();
 
             return Ok(categoria);
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             var categoria = this._context.Categorias.FirstOrDefault(c => c.CategoriaID == id);
 
@@ -111,7 +112,8 @@ namespace WebApi.Controllers
             }
 
             this._context.Categorias.Remove(categoria);
-            this._context.SaveChanges();
+            
+            await this._context.SaveChangesAsync();
 
             return Ok(categoria);
         }
