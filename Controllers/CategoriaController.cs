@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.Context;
 using WebApi.Models;
 using Microsoft.AspNetCore.Http;
+using WebApi.Filters;
 
 namespace WebApi.Controllers
 {
@@ -18,6 +19,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(ApiLoggingFilter))]
         public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
             try
