@@ -4,6 +4,7 @@ using WebApi.Context;
 using WebApi.Models;
 using Microsoft.AspNetCore.Http;
 using WebApi.Filters;
+using WebApi.Repository;
 
 namespace WebApi.Controllers
 {
@@ -11,27 +12,21 @@ namespace WebApi.Controllers
     [ApiController]
     public class CategoriaController : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public CategoriaController(AppDbContext context)
+        private readonly ICategoriaRepository _categoriaRepository;
+        public CategoriaController(ICategoriaRepository categoriaRepository)
         {
-            this._context = context;
+            _categoriaRepository = categoriaRepository;
         }
 
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]
-        public async Task<ActionResult<IEnumerable<Categoria>>> Get()
+        public ActionResult<IEnumerable<Categoria>> Get()
         {
             try
             {
-                var categoria = await this._context.Categorias.ToListAsync();
+                var categorias = this._categoriaRepository.GetCategorias();
 
-                if (categoria is null)
-                {
-                    return NotFound("Categorias não encontrada.");
-                }
-
-                return categoria;
+                return Ok(categorias);
 
             }
             catch(Exception)
@@ -41,18 +36,18 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
-        public async Task<ActionResult<Categoria>> GetId(int id)
+        public ActionResult<Categoria> GetId(int id)
         {
             try
             {
-                var categoria = await this._context.Categorias.FirstOrDefaultAsync(c => c.CategoriaID == id);
+                var categoria = this._categoriaRepository.GetCategoriaPorId(id);
 
-                if (categoria is null)
+                if(categoria is null)
                 {
                     return NotFound("Categoria não encontrada.");
                 }
 
-                return categoria;
+                return Ok(categoria);
             }
             catch(Exception)  
             {
@@ -60,64 +55,58 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpGet("Produtos")]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
-        {
-            try
-            {
-                return await this._context.Categorias.Include(p => p.Produtos).ToListAsync();
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
-            }
-        }
+        //[HttpGet("Produtos")]
+        //public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
+        //{
+        //    try
+        //    {
+        //        return await this._context.Categorias.Include(p => p.Produtos).ToListAsync();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
+        //    }
+        //}
 
         [HttpPost]
-        public async Task<ActionResult> Post(Categoria categoria)
+        public ActionResult Post(Categoria categoria)
         {
             if(categoria is null)
             {
                 return BadRequest();
             }
 
-            this._context.Categorias.Add(categoria);
+            var categoriaCriada = this._categoriaRepository.Create(categoria);
             
-            await this._context.SaveChangesAsync();
-
-            return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaID }, categoria);
+            return new CreatedAtRouteResult("ObterCategoria", new { id = categoriaCriada.CategoriaID }, categoriaCriada);
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public async Task<ActionResult> Put(int id, Categoria categoria)
+        public ActionResult Put(int id, Categoria categoria)
         {
             if(id != categoria.CategoriaID)
             {
                 return BadRequest();
             }
 
-            this._context.Entry(categoria).State = EntityState.Modified;
+           var categoriaAtualizada = this._categoriaRepository.Update(categoria);
 
-            await this._context.SaveChangesAsync();
-
-            return Ok(categoria);
+            return Ok(categoriaAtualizada);
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<ActionResult> Delete(int id)
+        public ActionResult Delete(int id)
         {
-            var categoria = this._context.Categorias.FirstOrDefault(c => c.CategoriaID == id);
+            var categoria = this._categoriaRepository.GetCategoriaPorId(id);
 
             if(categoria is null)
             {
                 return NotFound("Categoria não encontrada.");
             }
 
-            this._context.Categorias.Remove(categoria);
+            var categoriaRemovida = this._categoriaRepository.Delete(id);
             
-            await this._context.SaveChangesAsync();
-
-            return Ok(categoria);
+            return Ok(categoriaRemovida);
         }
     }
 }
