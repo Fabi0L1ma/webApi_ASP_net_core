@@ -21,107 +21,73 @@ namespace WebApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> Get()
         {
-            try
-            {
-                var produtos = _produtoRepository.GetAll();
 
-                if (produtos is null)
-                {
-                    return NotFound("Produtos não encontrados.");
-                }
+            var produtos = _produtoRepository.GetAll();
 
-                return Ok(produtos);
-            }
-            catch (Exception)
+            if (produtos is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
+                return NotFound("Produtos não encontrados.");
             }
+
+            return Ok(produtos);
         }
 
         [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> GetId(int? id)
         {
-            try
+
+            var produto = _produtoRepository.GetById(id.Value);
+
+            if (produto is null)
             {
-                var produto = _produtoRepository.GetById(id.Value);
-
-                if (produto is null)
-                {
-                    return NotFound("Produto não encontrado.");
-                }
-
-                return Ok(produto);
-
+                return NotFound("Produto não encontrado.");
             }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
-            }
+
+            return Ok(produto);
         }
 
         [HttpPost]
         public ActionResult Post(Produto produto)
         {
-            try
+
+            if (produto is null)
             {
-                if (produto is null)
-                {
-                    return BadRequest("Produto não informado.");
-                }
-
-                var produtoCriado = _produtoRepository.Create(produto);
-
-                return new CreatedAtRouteResult("ObterProduto", new { id = produtoCriado.ProdutoId }, produtoCriado);
-
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
+                return BadRequest("Produto não informado.");
             }
 
+            var produtoCriado = _produtoRepository.Create(produto);
+
+            return new CreatedAtRouteResult("ObterProduto", new { id = produtoCriado.ProdutoId }, produtoCriado);
         }
 
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, Produto produto)
         {
-            try
-            {
-                if (id != produto.ProdutoId)
-                {
-                    return BadRequest();
-                }
 
-                var produtoAtualizado = _produtoRepository.Update(produto);
-
-                return Ok(produtoAtualizado);
-            }
-            catch (Exception)
+            if (id != produto.ProdutoId)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
+                return BadRequest();
             }
 
+            var produtoAtualizado = _produtoRepository.Update(produto);
+
+            return Ok(produtoAtualizado);
         }
 
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            try
+
+            var produto = _produtoRepository.GetById(id);
+
+            if (produto is null)
             {
-                var produto = _produtoRepository.GetById(id);
-
-                if (produto is null)
-                {
-                    return NotFound("Produto não localizado.");
-                }
-
-                var produtoDeletado = _produtoRepository.Delete(id);
-
-                return Ok(produto);
+                return NotFound("Produto não localizado.");
             }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
-            }
+
+            var produtoDeletado = _produtoRepository.Delete(id);
+
+            return Ok(produto);
         }
     }
 }

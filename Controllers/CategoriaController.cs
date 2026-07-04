@@ -22,37 +22,24 @@ namespace WebApi.Controllers
         [ServiceFilter(typeof(ApiLoggingFilter))]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
-            try
-            {
-                var categorias = this._categoriaRepository.GetCategorias();
 
-                return Ok(categorias);
+            var categorias = this._categoriaRepository.GetCategorias();
 
-            }
-            catch(Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
-            }
+            return Ok(categorias);
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
         public ActionResult<Categoria> GetId(int id)
         {
-            try
-            {
-                var categoria = this._categoriaRepository.GetCategoriaPorId(id);
 
-                if(categoria is null)
-                {
-                    return NotFound("Categoria não encontrada.");
-                }
+            var categoria = this._categoriaRepository.GetCategoriaPorId(id);
 
-                return Ok(categoria);
-            }
-            catch(Exception)  
+            if (categoria is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
+                return NotFound("Categoria não encontrada.");
             }
+
+            return Ok(categoria);
         }
 
         //[HttpGet("Produtos")]
@@ -77,7 +64,7 @@ namespace WebApi.Controllers
             }
 
             var categoriaCriada = this._categoriaRepository.Create(categoria);
-            
+
             return new CreatedAtRouteResult("ObterCategoria", new { id = categoriaCriada.CategoriaID }, categoriaCriada);
         }
 
@@ -89,7 +76,7 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
 
-           var categoriaAtualizada = this._categoriaRepository.Update(categoria);
+            var categoriaAtualizada = this._categoriaRepository.Update(categoria);
 
             return Ok(categoriaAtualizada);
         }
@@ -105,7 +92,7 @@ namespace WebApi.Controllers
             }
 
             var categoriaRemovida = this._categoriaRepository.Delete(id);
-            
+
             return Ok(categoriaRemovida);
         }
     }
