@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using WebApi.Extensao;
 using WebApi.Filters;
 using WebApi.Logging;
+using WebApi.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,11 +40,13 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ApiLoggingFilter>();
 
-builder.Logging.AddProvider(new CustomerLoggerProvider(new CustomLoggerProviderConfiguration
-{
-    logLevel = LogLevel.Information
+//builder.Logging.AddProvider(new CustomerLoggerProvider(new CustomLoggerProviderConfiguration
+//{
+//    logLevel = LogLevel.Information
 
-}));
+//}));
+
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 
 var app = builder.Build();
 
