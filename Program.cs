@@ -19,8 +19,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 // SERIALIZAÇÃO DO JSON -> REFERENCIA
-builder.Services.AddControllers().AddJsonOptions(Options =>
-    Options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+//builder.Services.AddControllers().AddJsonOptions(Options =>
+//    Options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(ApiExceptionFilter));
+
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -45,7 +55,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "API"));
 
     app.ConfigureExceptionHandler();
-
 }
 
 app.UseHttpsRedirection();
