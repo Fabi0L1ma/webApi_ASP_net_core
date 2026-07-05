@@ -47,6 +47,7 @@ builder.Services.AddScoped<ApiLoggingFilter>();
 //}));
 
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
 var app = builder.Build();
 
