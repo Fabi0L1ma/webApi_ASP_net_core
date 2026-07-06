@@ -2,12 +2,8 @@
 
 namespace WebApi.Repository
 {
-    public interface IProdutoRepository
+    public interface IProdutoRepository : IRepository<Produto>
     {
-        public Produto Create(Produto produto);
-        public Produto Update(Produto produto);
-        public Produto Delete(int id);
-        public Produto GetById(int id);
-        public IEnumerable<Produto> GetAll();
+        IEnumerable<Produto> GetProdutosPorCategoria(int idCategoria);
     }
 }

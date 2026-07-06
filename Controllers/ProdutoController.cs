@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
-using WebApi.Context;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 using WebApi.Repository;
 
@@ -12,10 +8,11 @@ namespace WebApi.Controllers
     [ApiController]
     public class ProdutoController : ControllerBase
     {
-        private ProdutoRepository _produtoRepository;
-        public ProdutoController(AppDbContext context)
+        private readonly IProdutoRepository _produtoRepository;
+
+        public ProdutoController(IProdutoRepository produtoRepository)
         {
-            _produtoRepository = new ProdutoRepository(context);
+            _produtoRepository = produtoRepository;
         }
 
         [HttpGet]
@@ -35,8 +32,7 @@ namespace WebApi.Controllers
         [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> GetId(int? id)
         {
-
-            var produto = _produtoRepository.GetById(id.Value);
+            var produto = _produtoRepository.Get(p => p.ProdutoId == id);
 
             if (produto is null)
             {
@@ -44,6 +40,20 @@ namespace WebApi.Controllers
             }
 
             return Ok(produto);
+        }
+
+        [HttpGet("produto/{idCategoria:int}")]
+        public ActionResult<IEnumerable<Produto>> GetProdutosPorCategoria(int idCategoria)
+        {
+            var produtos = _produtoRepository.GetProdutosPorCategoria(idCategoria);
+
+            if(produtos is null)
+            {
+                return NotFound("Produtos não encontrados.");
+            }
+
+
+            return Ok(produtos);
         }
 
         [HttpPost]
@@ -77,15 +87,14 @@ namespace WebApi.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-
-            var produto = _produtoRepository.GetById(id);
+            var produto = _produtoRepository.Get(p => p.ProdutoId == id);
 
             if (produto is null)
             {
                 return NotFound("Produto não localizado.");
             }
 
-            var produtoDeletado = _produtoRepository.Delete(id);
+            var produtoDeletado = _produtoRepository.Delete(produto);
 
             return Ok(produto);
         }
