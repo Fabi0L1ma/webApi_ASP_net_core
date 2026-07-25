@@ -16,7 +16,7 @@ namespace WebApi.Repository
         public T Create(T entidade)
         {
             _context.Set<T>().Add(entidade);
-            _context.SaveChanges();
+            //_context.SaveChanges();
 
             return entidade;
         }
@@ -24,7 +24,7 @@ namespace WebApi.Repository
         public T Delete(T entidade)
         {
             _context.Set<T>().Remove(entidade);
-            _context.SaveChanges();
+            //_context.SaveChanges();
 
             return entidade;
         }
@@ -36,13 +36,13 @@ namespace WebApi.Repository
 
         public IEnumerable<T> GetAll()
         {
-            return _context.Set<T>().ToList();
+            return _context.Set<T>().AsNoTracking().ToList();
         }
 
         public T Update(T entidade)
         {
             _context.Set<T>().Update(entidade);
-            _context.SaveChanges();
+            //_context.SaveChanges();
             
             return entidade;
         }

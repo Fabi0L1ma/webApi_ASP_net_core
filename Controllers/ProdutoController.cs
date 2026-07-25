@@ -8,18 +8,18 @@ namespace WebApi.Controllers
     [ApiController]
     public class ProdutoController : ControllerBase
     {
-        private readonly IProdutoRepository _produtoRepository;
+        private readonly IUnityOfWork _unityOfWork;
 
-        public ProdutoController(IProdutoRepository produtoRepository)
+        public ProdutoController(IUnityOfWork unityOfWork)
         {
-            _produtoRepository = produtoRepository;
+            _unityOfWork = unityOfWork;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> Get()
         {
 
-            var produtos = _produtoRepository.GetAll();
+            var produtos = _unityOfWork.ProdutoRepository.GetAll();
 
             if (produtos is null)
             {
@@ -32,7 +32,7 @@ namespace WebApi.Controllers
         [HttpGet("{id:int}", Name = "ObterProduto")]
         public ActionResult<Produto> GetId(int? id)
         {
-            var produto = _produtoRepository.Get(p => p.ProdutoId == id);
+            var produto = _unityOfWork.ProdutoRepository.Get(p => p.ProdutoId == id);
 
             if (produto is null)
             {
@@ -45,7 +45,7 @@ namespace WebApi.Controllers
         [HttpGet("produto/{idCategoria:int}")]
         public ActionResult<IEnumerable<Produto>> GetProdutosPorCategoria(int idCategoria)
         {
-            var produtos = _produtoRepository.GetProdutosPorCategoria(idCategoria);
+            var produtos = _unityOfWork.ProdutoRepository.GetProdutosPorCategoria(idCategoria);
 
             if(produtos is null)
             {
@@ -65,7 +65,9 @@ namespace WebApi.Controllers
                 return BadRequest("Produto não informado.");
             }
 
-            var produtoCriado = _produtoRepository.Create(produto);
+            var produtoCriado = _unityOfWork.ProdutoRepository.Create(produto);
+
+            _unityOfWork.Commit();
 
             return new CreatedAtRouteResult("ObterProduto", new { id = produtoCriado.ProdutoId }, produtoCriado);
         }
@@ -79,7 +81,9 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
 
-            var produtoAtualizado = _produtoRepository.Update(produto);
+            var produtoAtualizado = _unityOfWork.ProdutoRepository.Update(produto);
+
+            _unityOfWork.Commit();
 
             return Ok(produtoAtualizado);
         }
@@ -87,14 +91,16 @@ namespace WebApi.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            var produto = _produtoRepository.Get(p => p.ProdutoId == id);
+            var produto = _unityOfWork.ProdutoRepository.Get(p => p.ProdutoId == id);
 
             if (produto is null)
             {
                 return NotFound("Produto não localizado.");
             }
 
-            var produtoDeletado = _produtoRepository.Delete(produto);
+            var produtoDeletado = _unityOfWork.ProdutoRepository.Delete(produto);
+
+            _unityOfWork.Commit();
 
             return Ok(produto);
         }

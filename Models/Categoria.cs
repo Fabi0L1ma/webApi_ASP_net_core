@@ -21,7 +21,6 @@ namespace WebApi.Models
         [Required]
         [StringLength(300)]
         public string? ImageUrl { get; set; }
-
         [JsonIgnore]
         public ICollection<Produto>? Produtos { get; set; }
     }

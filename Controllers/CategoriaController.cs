@@ -12,10 +12,11 @@ namespace WebApi.Controllers
     [ApiController]
     public class CategoriaController : ControllerBase
     {
-        private readonly IRepository<Categoria> _categoriaRepository;
-        public CategoriaController(IRepository<Categoria> categoriaRepository)
+        private readonly IUnityOfWork _unityOfWork;
+
+        public CategoriaController(IUnityOfWork unityOfWork)
         {
-            _categoriaRepository = categoriaRepository;
+            _unityOfWork = unityOfWork;
         }
 
         [HttpGet]
@@ -23,7 +24,7 @@ namespace WebApi.Controllers
         public ActionResult<IEnumerable<Categoria>> Get()
         {
 
-            var categorias = this._categoriaRepository.GetAll();
+            var categorias = _unityOfWork.CategoriaRepository.GetAll();
 
             return Ok(categorias);
         }
@@ -32,7 +33,7 @@ namespace WebApi.Controllers
         public ActionResult<Categoria> GetId(int id)
         {
 
-            var categoria = this._categoriaRepository.Get(C => C.CategoriaID == id);
+            var categoria = _unityOfWork.CategoriaRepository.Get(C => C.CategoriaID == id);
 
             if (categoria is null)
             {
@@ -63,7 +64,9 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
 
-            var categoriaCriada = this._categoriaRepository.Create(categoria);
+            var categoriaCriada = _unityOfWork.CategoriaRepository.Create(categoria);
+
+            _unityOfWork.Commit();
 
             return new CreatedAtRouteResult("ObterCategoria", new { id = categoriaCriada.CategoriaID }, categoriaCriada);
         }
@@ -76,7 +79,9 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
 
-            var categoriaAtualizada = this._categoriaRepository.Update(categoria);
+            var categoriaAtualizada = _unityOfWork.CategoriaRepository.Update(categoria);
+            
+            _unityOfWork.Commit();
 
             return Ok(categoriaAtualizada);
         }
@@ -84,14 +89,16 @@ namespace WebApi.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            var categoria = this._categoriaRepository.Get(c => c.CategoriaID == id);
+            var categoria = _unityOfWork.CategoriaRepository.Get(c => c.CategoriaID == id);
 
             if (categoria is null)
             {
                 return NotFound("Categoria não encontrada.");
             }
 
-            var categoriaRemovida = this._categoriaRepository.Delete(categoria);
+            var categoriaRemovida = _unityOfWork.CategoriaRepository.Delete(categoria);
+
+            _unityOfWork.Commit();
 
             return Ok(categoriaRemovida);
         }
