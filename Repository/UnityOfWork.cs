@@ -4,9 +4,9 @@ namespace WebApi.Repository
 {
     public class UnityOfWork : IUnityOfWork
     {
-        private ICategoriaRepository _categoriaRepository;
+        private ICategoriaRepository? _categoriaRepository;
 
-        private IProdutoRepository _produtoRepository;
+        private IProdutoRepository? _produtoRepository;
 
         public AppDbContext _context;
 

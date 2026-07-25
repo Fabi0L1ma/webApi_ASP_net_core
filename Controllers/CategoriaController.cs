@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebApi.Context;
-using WebApi.Models;
-using Microsoft.AspNetCore.Http;
 using WebApi.Filters;
 using WebApi.Repository;
+using WebApi.DTOs;
 
 namespace WebApi.Controllers
 {
@@ -21,16 +18,17 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public ActionResult<IEnumerable<CategoriaDTO>> Get()
         {
-
             var categorias = _unityOfWork.CategoriaRepository.GetAll();
 
-            return Ok(categorias);
+            var categoriasDTO = categorias.ToCategoriaDTOList();
+
+            return Ok(categoriasDTO);
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
-        public ActionResult<Categoria> GetId(int id)
+        public ActionResult<CategoriaDTO> GetId(int id)
         {
 
             var categoria = _unityOfWork.CategoriaRepository.Get(C => C.CategoriaID == id);
@@ -40,54 +38,51 @@ namespace WebApi.Controllers
                 return NotFound("Categoria não encontrada.");
             }
 
-            return Ok(categoria);
+            var categoriaDTO = categoria.ToCategoriaDTO();
+
+            return Ok(categoriaDTO);
         }
 
-        //[HttpGet("Produtos")]
-        //public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos()
-        //{
-        //    try
-        //    {
-        //        return await this._context.Categorias.Include(p => p.Produtos).ToListAsync();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um problema ao tratar a solicitação.");
-        //    }
-        //}
-
         [HttpPost]
-        public ActionResult Post(Categoria categoria)
+        public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDTO)
         {
-            if (categoria is null)
+            if (categoriaDTO is null)
             {
                 return BadRequest();
             }
+
+            var categoria = categoriaDTO.ToCategoria();
 
             var categoriaCriada = _unityOfWork.CategoriaRepository.Create(categoria);
 
             _unityOfWork.Commit();
 
-            return new CreatedAtRouteResult("ObterCategoria", new { id = categoriaCriada.CategoriaID }, categoriaCriada);
+            var novaCategoriaDTO = categoria.ToCategoriaDTO();
+
+            return new CreatedAtRouteResult("ObterCategoria", new { id = novaCategoriaDTO.CategoriaID }, novaCategoriaDTO);
         }
 
         [HttpPut("{id:int:min(1)}")]
-        public ActionResult Put(int id, Categoria categoria)
+        public ActionResult<CategoriaDTO> Put(int id, CategoriaDTO categoriaDTO)
         {
-            if (id != categoria.CategoriaID)
+            if (id != categoriaDTO.CategoriaID)
             {
                 return BadRequest();
             }
 
+            var categoria = categoriaDTO.ToCategoria();
+
             var categoriaAtualizada = _unityOfWork.CategoriaRepository.Update(categoria);
             
+            var novaCategoriaDTO = categoria.ToCategoriaDTO();
+
             _unityOfWork.Commit();
 
-            return Ok(categoriaAtualizada);
+            return Ok(novaCategoriaDTO);
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public ActionResult<CategoriaDTO> Delete(int id)
         {
             var categoria = _unityOfWork.CategoriaRepository.Get(c => c.CategoriaID == id);
 
@@ -100,7 +95,9 @@ namespace WebApi.Controllers
 
             _unityOfWork.Commit();
 
-            return Ok(categoriaRemovida);
+            var categoriaDTO = categoria.ToCategoriaDTO();
+
+            return Ok(categoriaDTO);
         }
     }
 }
