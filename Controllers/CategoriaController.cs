@@ -30,7 +30,6 @@ namespace WebApi.Controllers
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
         public ActionResult<CategoriaDTO> GetId(int id)
         {
-
             var categoria = _unityOfWork.CategoriaRepository.Get(C => C.CategoriaID == id);
 
             if (categoria is null)
@@ -57,7 +56,7 @@ namespace WebApi.Controllers
 
             _unityOfWork.Commit();
 
-            var novaCategoriaDTO = categoria.ToCategoriaDTO();
+            var novaCategoriaDTO = categoriaCriada.ToCategoriaDTO();
 
             return new CreatedAtRouteResult("ObterCategoria", new { id = novaCategoriaDTO.CategoriaID }, novaCategoriaDTO);
         }
@@ -74,7 +73,7 @@ namespace WebApi.Controllers
 
             var categoriaAtualizada = _unityOfWork.CategoriaRepository.Update(categoria);
             
-            var novaCategoriaDTO = categoria.ToCategoriaDTO();
+            var novaCategoriaDTO = categoriaAtualizada.ToCategoriaDTO();
 
             _unityOfWork.Commit();
 
@@ -95,7 +94,7 @@ namespace WebApi.Controllers
 
             _unityOfWork.Commit();
 
-            var categoriaDTO = categoria.ToCategoriaDTO();
+            var categoriaDTO = categoriaRemovida.ToCategoriaDTO();
 
             return Ok(categoriaDTO);
         }
