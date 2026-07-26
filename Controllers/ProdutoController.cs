@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApi.DTOs;
 using WebApi.Models;
 using WebApi.Repository;
 
@@ -16,7 +17,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public ActionResult<IEnumerable<ProdutoDTO>> Get()
         {
 
             var produtos = _unityOfWork.ProdutoRepository.GetAll();
@@ -26,11 +27,13 @@ namespace WebApi.Controllers
                 return NotFound("Produtos não encontrados.");
             }
 
-            return Ok(produtos);
+            var produtoDTO = produtos.ToProdutosDTOList();
+
+            return Ok(produtoDTO);
         }
 
         [HttpGet("{id:int}", Name = "ObterProduto")]
-        public ActionResult<Produto> GetId(int? id)
+        public ActionResult<ProdutoDTO> GetId(int? id)
         {
             var produto = _unityOfWork.ProdutoRepository.Get(p => p.ProdutoId == id);
 
@@ -39,11 +42,13 @@ namespace WebApi.Controllers
                 return NotFound("Produto não encontrado.");
             }
 
-            return Ok(produto);
+            var produtoDTO = produto.ToProdutoDTO();
+
+            return Ok(produtoDTO);
         }
 
         [HttpGet("produto/{idCategoria:int}")]
-        public ActionResult<IEnumerable<Produto>> GetProdutosPorCategoria(int idCategoria)
+        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosPorCategoria(int idCategoria)
         {
             var produtos = _unityOfWork.ProdutoRepository.GetProdutosPorCategoria(idCategoria);
 
@@ -52,44 +57,51 @@ namespace WebApi.Controllers
                 return NotFound("Produtos não encontrados.");
             }
 
+            var produtosDTO = produtos.ToProdutosDTOList();
 
-            return Ok(produtos);
+            return Ok(produtosDTO);
         }
 
         [HttpPost]
-        public ActionResult Post(Produto produto)
+        public ActionResult<ProdutoDTO> Post(ProdutoDTO produtoDTO)
         {
-
-            if (produto is null)
+            if (produtoDTO is null)
             {
                 return BadRequest("Produto não informado.");
             }
+
+            var produto = produtoDTO.ToProduto();
 
             var produtoCriado = _unityOfWork.ProdutoRepository.Create(produto);
 
             _unityOfWork.Commit();
 
-            return new CreatedAtRouteResult("ObterProduto", new { id = produtoCriado.ProdutoId }, produtoCriado);
+            var novoProdutoDTO = produtoCriado.ToProdutoDTO();
+
+            return new CreatedAtRouteResult("ObterProduto", new { id = novoProdutoDTO.ProdutoId }, novoProdutoDTO);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produto)
+        public ActionResult<ProdutoDTO> Put(int id, ProdutoDTO produtoDTO)
         {
-
-            if (id != produto.ProdutoId)
+            if (id != produtoDTO.ProdutoId)
             {
                 return BadRequest();
             }
+
+            var produto = produtoDTO.ToProduto();
 
             var produtoAtualizado = _unityOfWork.ProdutoRepository.Update(produto);
 
             _unityOfWork.Commit();
 
-            return Ok(produtoAtualizado);
+            var ProdutoDTOAtualizado = produtoAtualizado.ToProdutoDTO();
+
+            return Ok(ProdutoDTOAtualizado);
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ProdutoDTO> Delete(int id)
         {
             var produto = _unityOfWork.ProdutoRepository.Get(p => p.ProdutoId == id);
 
@@ -102,7 +114,9 @@ namespace WebApi.Controllers
 
             _unityOfWork.Commit();
 
-            return Ok(produto);
+            var produtoDTODeletado = produtoDeletado.ToProdutoDTO();
+
+            return Ok(produtoDTODeletado);
         }
     }
 }

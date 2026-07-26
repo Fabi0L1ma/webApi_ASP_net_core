@@ -10,7 +10,9 @@ namespace WebApi.Repository
      
         public IEnumerable<Produto> GetProdutosPorCategoria(int idCategoria)
         {
-            return GetAll().Where(c => c.CategoriaId == idCategoria);
+            var produtos = GetAll().Where(c => c.CategoriaId == idCategoria);
+
+            return produtos;
         }
     }
 }
