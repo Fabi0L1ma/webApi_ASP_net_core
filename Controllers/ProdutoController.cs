@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WebApi.DTOs;
-using WebApi.Models;
+using WebApi.Paginacao;
 using WebApi.Repository;
 
 namespace WebApi.Controllers
@@ -14,6 +15,28 @@ namespace WebApi.Controllers
         public ProdutoController(IUnityOfWork unityOfWork)
         {
             _unityOfWork = unityOfWork;
+        }
+
+        [HttpGet("paginacao")]
+        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutoPaginacao produtoPaginacao) 
+        {
+            var produtos = _unityOfWork.ProdutoRepository.GetProdutos(produtoPaginacao);
+
+            var meta_data = new
+            {
+                produtos.TotalItens,
+                produtos.TamnhoPagina,
+                produtos.NumeroPagina,
+                produtos.TotalPagina,
+                produtos.HasProxima,
+                produtos.HasAnterior
+            };
+
+            Response.Headers.Append("X-Paginacao", JsonConvert.SerializeObject(meta_data));
+
+            var produtosDTO = produtos.ToProdutosDTOList();
+
+            return Ok(produtosDTO);
         }
 
         [HttpGet]
