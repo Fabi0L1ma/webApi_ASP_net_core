@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Paginacao
 {
-    public class ListaPagina<T> : List<T> where T : class
+    public class ListarPaginacao<T> : List<T> where T : class
     {
         public int NumeroPagina { get; set; }
         public int TotalPagina { get; set; }
@@ -9,7 +9,7 @@
         public bool HasAnterior => NumeroPagina > 1;
         public bool HasProxima => NumeroPagina < TamnhoPagina;
 
-        public ListaPagina(List<T> itens, int quantidade, int numeroPagina, int tamanhoPagina)
+        public ListarPaginacao(List<T> itens, int quantidade, int numeroPagina, int tamanhoPagina)
         { 
             TotalItens = quantidade;
             TamnhoPagina = tamanhoPagina;
@@ -19,13 +19,13 @@
             AddRange(itens);
         }
 
-        public static ListaPagina<T> ToListaPagina(IQueryable<T> item, int numeroPagina, int tamanhoPagina)
+        public static ListarPaginacao<T> ToListaPagina(IQueryable<T> item, int numeroPagina, int tamanhoPagina)
         {
             var quantidade = item.Count();
 
             var itens = item.Skip((numeroPagina - 1) * tamanhoPagina).Take(tamanhoPagina).ToList();
 
-            return new ListaPagina<T>(itens, quantidade, numeroPagina, tamanhoPagina);
+            return new ListarPaginacao<T>(itens, quantidade, numeroPagina, tamanhoPagina);
         }
     }
 }

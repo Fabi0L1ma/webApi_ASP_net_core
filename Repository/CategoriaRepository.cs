@@ -9,11 +9,11 @@ namespace WebApi.Repository
     {
         public CategoriaRepository(AppDbContext context) : base(context){}
 
-        public ListaPagina<Categoria> GetCategorias(CategoriaParametros categoriaParams)
+        public ListarPaginacao<Categoria> GetCategorias(CategoriaParametros categoriaParams)
         {
             var categorias = GetAll().OrderBy(c => c.CategoriaID).AsQueryable();
 
-            var categoriasOrdenados = ListaPagina<Categoria>.ToListaPagina(categorias, categoriaParams.NumeroPagina, categoriaParams.TamanhoPagina);
+            var categoriasOrdenados = ListarPaginacao<Categoria>.ToListaPagina(categorias, categoriaParams.NumeroPagina, categoriaParams.TamanhoPagina);
 
             return categoriasOrdenados;
         }

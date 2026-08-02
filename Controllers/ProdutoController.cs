@@ -34,7 +34,7 @@ namespace WebApi.Controllers
             return obterProdutos(produtos);
         }
 
-        private ActionResult<IEnumerable<ProdutoDTO>> obterProdutos(ListaPagina<Models.Produto> produtos)
+        private ActionResult<IEnumerable<ProdutoDTO>> obterProdutos(ListarPaginacao<Models.Produto> produtos)
         {
             var meta_data = new
             {

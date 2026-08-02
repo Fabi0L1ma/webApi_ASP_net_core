@@ -9,16 +9,16 @@ namespace WebApi.Repository
     {
         public ProdutoRepository(AppDbContext context) : base(context){}
 
-        public ListaPagina<Produto> GetProdutos(ProdutoParametros produtosParams)
+        public ListarPaginacao<Produto> GetProdutos(ProdutoParametros produtosParams)
         {
             var produtos = GetAll().OrderBy(p => p.ProdutoId).AsQueryable();
 
-            var produtosOrdenados = ListaPagina<Produto>.ToListaPagina(produtos, produtosParams.NumeroPagina, produtosParams.TamanhoPagina);
+            var produtosOrdenados = ListarPaginacao<Produto>.ToListaPagina(produtos, produtosParams.NumeroPagina, produtosParams.TamanhoPagina);
 
             return produtosOrdenados;       
         }
 
-        public ListaPagina<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroParams)
+        public ListarPaginacao<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroParams)
         {
             var produtos = GetAll().AsQueryable();
 
@@ -38,7 +38,7 @@ namespace WebApi.Repository
                 }
             }
 
-            var produtosFiltrados = ListaPagina<Produto>.ToListaPagina(produtos, produtosFiltroParams.NumeroPagina, produtosFiltroParams.TamanhoPagina);
+            var produtosFiltrados = ListarPaginacao<Produto>.ToListaPagina(produtos, produtosFiltroParams.NumeroPagina, produtosFiltroParams.TamanhoPagina);
 
             return produtosFiltrados;
         }

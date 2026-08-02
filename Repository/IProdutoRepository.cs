@@ -5,8 +5,8 @@ namespace WebApi.Repository
 {
     public interface IProdutoRepository : IRepository<Produto>
     {
-        ListaPagina<Produto> GetProdutos(ProdutoParametros produtosParams);
-        ListaPagina<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroPreco);
+        ListarPaginacao<Produto> GetProdutos(ProdutoParametros produtosParams);
+        ListarPaginacao<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroPreco);
         IEnumerable<Produto> GetProdutosPorCategoria(int idCategoria);
     }
 }
