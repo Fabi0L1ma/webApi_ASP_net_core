@@ -18,11 +18,24 @@ namespace WebApi.Controllers
             _unityOfWork = unityOfWork;
         }
 
+        [HttpGet("filtro/nome/paginacao")]
+        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasFiltroNome([FromQuery] CategoriasFiltroNome categoriasFiltroParams)
+        {
+            var categorias = _unityOfWork.CategoriaRepository.GetCategoriasPorFiltroNome(categoriasFiltroParams);
+
+            return obterCategoria(categorias);
+        }
+
         [HttpGet("paginacao")]
         public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriaParametros categoriaParametros)
         {
             var categorias = _unityOfWork.CategoriaRepository.GetCategorias(categoriaParametros);
 
+            return obterCategoria(categorias);
+        }
+
+        private ActionResult<IEnumerable<CategoriaDTO>> obterCategoria(ListarPaginacao<Models.Categoria> categorias)
+        {
             var meta_data = new
             {
                 categorias.TotalItens,
@@ -39,7 +52,6 @@ namespace WebApi.Controllers
 
             return Ok(categoriasDTO);
         }
-
 
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]
