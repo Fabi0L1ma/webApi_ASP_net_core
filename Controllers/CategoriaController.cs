@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebApi.Filters;
-using WebApi.Repository;
+using Newtonsoft.Json;
 using WebApi.DTOs;
+using WebApi.Filters;
+using WebApi.Paginacao;
+using WebApi.Repository;
 
 namespace WebApi.Controllers
 {
@@ -15,6 +17,29 @@ namespace WebApi.Controllers
         {
             _unityOfWork = unityOfWork;
         }
+
+        [HttpGet("paginacao")]
+        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriaParametros categoriaParametros)
+        {
+            var categorias = _unityOfWork.CategoriaRepository.GetCategorias(categoriaParametros);
+
+            var meta_data = new
+            {
+                categorias.TotalItens,
+                categorias.TamnhoPagina,
+                categorias.NumeroPagina,
+                categorias.TotalPagina,
+                categorias.HasProxima,
+                categorias.HasAnterior
+            };
+
+            Response.Headers.Append("X-Paginacao", JsonConvert.SerializeObject(meta_data));
+
+            var categoriasDTO = categorias.ToCategoriaDTOList();
+
+            return Ok(categoriasDTO);
+        }
+
 
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]

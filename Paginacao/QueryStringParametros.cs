@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Paginacao
 {
-    public class ProdutoPaginacao
+    public abstract class QueryStringParametros
     {
         const int maxPageSize = 10;
         public int NumeroPagina { get; set; } = 1;
@@ -8,7 +8,7 @@
 
         public int TamanhoPagina
         {
-            get 
+            get
             {
                 return _tamanhoPagina;
             }

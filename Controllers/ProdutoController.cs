@@ -18,7 +18,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("paginacao")]
-        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutoPaginacao produtoPaginacao) 
+        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutoParametros produtoPaginacao) 
         {
             var produtos = _unityOfWork.ProdutoRepository.GetProdutos(produtoPaginacao);
 

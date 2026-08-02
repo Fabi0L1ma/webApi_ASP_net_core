@@ -9,7 +9,7 @@ namespace WebApi.Repository
     {
         public ProdutoRepository(AppDbContext context) : base(context){}
 
-        public ListaPagina<Produto> GetProdutos(ProdutoPaginacao produtosParams)
+        public ListaPagina<Produto> GetProdutos(ProdutoParametros produtosParams)
         {
             var produtos = GetAll().OrderBy(p => p.ProdutoId).AsQueryable();
 
