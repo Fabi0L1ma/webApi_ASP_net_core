@@ -17,11 +17,25 @@ namespace WebApi.Controllers
             _unityOfWork = unityOfWork;
         }
 
+        [HttpGet("filtro/preco/paginacao")]
+        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosFiltroPreco([FromQuery] ProdutosFiltroPreco produtosFiltroParams)
+        {
+            var produtos = _unityOfWork.ProdutoRepository.GetProdutosFiltroPreco(produtosFiltroParams);
+
+            return obterProdutos(produtos);
+        }
+
+
         [HttpGet("paginacao")]
         public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutoParametros produtoPaginacao) 
         {
             var produtos = _unityOfWork.ProdutoRepository.GetProdutos(produtoPaginacao);
 
+            return obterProdutos(produtos);
+        }
+
+        private ActionResult<IEnumerable<ProdutoDTO>> obterProdutos(ListaPagina<Models.Produto> produtos)
+        {
             var meta_data = new
             {
                 produtos.TotalItens,
