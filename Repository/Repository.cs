@@ -29,14 +29,14 @@ namespace WebApi.Repository
             return entidade;
         }
 
-        public T? Get(Expression<Func<T, bool>> filtro)
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> filtro)
         {
-            return _context.Set<T>().FirstOrDefault(filtro);
+            return await _context.Set<T>().FirstOrDefaultAsync(filtro);
         }
 
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return _context.Set<T>().AsNoTracking().ToList();
+            return await _context.Set<T>().AsNoTracking().ToListAsync();
         }
 
         public T Update(T entidade)

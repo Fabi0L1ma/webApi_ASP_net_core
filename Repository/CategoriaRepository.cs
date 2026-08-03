@@ -9,25 +9,27 @@ namespace WebApi.Repository
     {
         public CategoriaRepository(AppDbContext context) : base(context){}
 
-        public ListarPaginacao<Categoria> GetCategorias(CategoriaParametros categoriaParams)
+        public async Task<ListarPaginacao<Categoria>> GetCategoriasAsync(CategoriaParametros categoriaParams)
         {
-            var categorias = GetAll().OrderBy(c => c.CategoriaID).AsQueryable();
+            var categorias = await GetAllAsync();
 
-            var categoriasOrdenados = ListarPaginacao<Categoria>.ToListaPagina(categorias, categoriaParams.NumeroPagina, categoriaParams.TamanhoPagina);
+            var categoriaOrdenadas = categorias.OrderBy(c => c.CategoriaID).AsQueryable();
 
-            return categoriasOrdenados;
+            var resultado = ListarPaginacao<Categoria>.ToListaPagina(categoriaOrdenadas, categoriaParams.NumeroPagina, categoriaParams.TamanhoPagina);
+
+            return resultado;
         }
 
-        public ListarPaginacao<Categoria> GetCategoriasPorFiltroNome(CategoriasFiltroNome categoriasFiltroParams)
+        public async Task<ListarPaginacao<Categoria>> GetCategoriasPorFiltroNomeAsync(CategoriasFiltroNome categoriasFiltroParams)
         {
-            var categorias = GetAll().AsQueryable();
+            var categorias = await GetAllAsync();
 
             if (!string.IsNullOrEmpty(categoriasFiltroParams.Nome))
             {
                 categorias = categorias.Where(c => c.Nome.Contains(categoriasFiltroParams.Nome)).OrderBy(c => c.Nome);
             }
 
-            var categoriasFiltrados = ListarPaginacao<Categoria>.ToListaPagina(categorias, categoriasFiltroParams.NumeroPagina, categoriasFiltroParams.TamanhoPagina);
+            var categoriasFiltrados = ListarPaginacao<Categoria>.ToListaPagina(categorias.AsQueryable(), categoriasFiltroParams.NumeroPagina, categoriasFiltroParams.TamanhoPagina);
 
             return categoriasFiltrados;
         }

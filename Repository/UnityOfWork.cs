@@ -31,9 +31,9 @@ namespace WebApi.Repository
             }
         }
 
-        public void Commit()
+        public async Task Commit()
         {
-            this._context.SaveChanges();
+            await this._context.SaveChangesAsync();
         }
         
         public void Dispose()

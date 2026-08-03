@@ -9,18 +9,20 @@ namespace WebApi.Repository
     {
         public ProdutoRepository(AppDbContext context) : base(context){}
 
-        public ListarPaginacao<Produto> GetProdutos(ProdutoParametros produtosParams)
+        public async Task<ListarPaginacao<Produto>> GetProdutosAsync(ProdutoParametros produtosParams)
         {
-            var produtos = GetAll().OrderBy(p => p.ProdutoId).AsQueryable();
+            var produtos = await GetAllAsync();
 
-            var produtosOrdenados = ListarPaginacao<Produto>.ToListaPagina(produtos, produtosParams.NumeroPagina, produtosParams.TamanhoPagina);
+            var produtosOrdenados = produtos.OrderBy(p => p.ProdutoId).AsQueryable();
 
-            return produtosOrdenados;       
+            var resultado = ListarPaginacao<Produto>.ToListaPagina(produtosOrdenados, produtosParams.NumeroPagina, produtosParams.TamanhoPagina);
+
+            return resultado;       
         }
 
-        public ListarPaginacao<Produto> GetProdutosFiltroPreco(ProdutosFiltroPreco produtosFiltroParams)
+        public async Task<ListarPaginacao<Produto>> GetProdutosFiltroPrecoAsync(ProdutosFiltroPreco produtosFiltroParams)
         {
-            var produtos = GetAll().AsQueryable();
+            var produtos = await GetAllAsync();
 
             if(produtosFiltroParams.Preco.HasValue && !string.IsNullOrEmpty(produtosFiltroParams.PrecoCriterio))
             {
@@ -38,16 +40,18 @@ namespace WebApi.Repository
                 }
             }
 
-            var produtosFiltrados = ListarPaginacao<Produto>.ToListaPagina(produtos, produtosFiltroParams.NumeroPagina, produtosFiltroParams.TamanhoPagina);
+            var produtosFiltrados = ListarPaginacao<Produto>.ToListaPagina(produtos.AsQueryable(), produtosFiltroParams.NumeroPagina, produtosFiltroParams.TamanhoPagina);
 
             return produtosFiltrados;
         }
 
-        public IEnumerable<Produto> GetProdutosPorCategoria(int idCategoria)
+        public async Task<IEnumerable<Produto>> GetProdutosPorCategoriaAsync(int idCategoria)
         {
-            var produtos = GetAll().Where(c => c.CategoriaId == idCategoria);
+            var produtos = await GetAllAsync();
 
-            return produtos;
+            var produtosOrdenados = produtos.Where(c => c.CategoriaId == idCategoria);
+
+            return produtosOrdenados;
         }
     }
 }

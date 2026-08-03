@@ -5,8 +5,8 @@ namespace WebApi.Repository
 {
     public interface ICategoriaRepository : IRepository<Categoria>
     {
-        ListarPaginacao<Categoria> GetCategorias(CategoriaParametros categoriaParams);
-        ListarPaginacao<Categoria> GetCategoriasPorFiltroNome(CategoriasFiltroNome categoriasFiltroNome);
+        Task<ListarPaginacao<Categoria>> GetCategoriasAsync(CategoriaParametros categoriaParams);
+        Task<ListarPaginacao<Categoria>> GetCategoriasPorFiltroNomeAsync(CategoriasFiltroNome categoriasFiltroNome);
 
     }
 }

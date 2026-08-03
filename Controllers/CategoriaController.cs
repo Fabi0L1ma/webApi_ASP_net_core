@@ -19,17 +19,17 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("filtro/nome/paginacao")]
-        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriasFiltroNome([FromQuery] CategoriasFiltroNome categoriasFiltroParams)
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriasFiltroNomeAsync([FromQuery] CategoriasFiltroNome categoriasFiltroParams)
         {
-            var categorias = _unityOfWork.CategoriaRepository.GetCategoriasPorFiltroNome(categoriasFiltroParams);
+            var categorias = await _unityOfWork.CategoriaRepository.GetCategoriasPorFiltroNomeAsync(categoriasFiltroParams);
 
             return obterCategoria(categorias);
         }
 
         [HttpGet("paginacao")]
-        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriaParametros categoriaParametros)
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAsync([FromQuery] CategoriaParametros categoriaParametros)
         {
-            var categorias = _unityOfWork.CategoriaRepository.GetCategorias(categoriaParametros);
+            var categorias = await _unityOfWork.CategoriaRepository.GetCategoriasAsync(categoriaParametros);
 
             return obterCategoria(categorias);
         }
@@ -55,9 +55,9 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]
-        public ActionResult<IEnumerable<CategoriaDTO>> Get()
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAsync()
         {
-            var categorias = _unityOfWork.CategoriaRepository.GetAll();
+            var categorias = await _unityOfWork.CategoriaRepository.GetAllAsync();
 
             var categoriasDTO = categorias.ToCategoriaDTOList();
 
@@ -65,9 +65,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterCategoria")]
-        public ActionResult<CategoriaDTO> GetId(int id)
+        public async Task<ActionResult<CategoriaDTO>> GetIdAsync(int id)
         {
-            var categoria = _unityOfWork.CategoriaRepository.Get(C => C.CategoriaID == id);
+            var categoria = await _unityOfWork.CategoriaRepository.GetAsync(C => C.CategoriaID == id);
 
             if (categoria is null)
             {
@@ -118,9 +118,9 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult<CategoriaDTO> Delete(int id)
+        public async Task<ActionResult<CategoriaDTO>> DeleteAsync(int id)
         {
-            var categoria = _unityOfWork.CategoriaRepository.Get(c => c.CategoriaID == id);
+            var categoria = await _unityOfWork.CategoriaRepository.GetAsync(c => c.CategoriaID == id);
 
             if (categoria is null)
             {

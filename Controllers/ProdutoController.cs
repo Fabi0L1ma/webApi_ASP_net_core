@@ -18,18 +18,18 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("filtro/preco/paginacao")]
-        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosFiltroPreco([FromQuery] ProdutosFiltroPreco produtosFiltroParams)
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosFiltroPrecoAsync([FromQuery] ProdutosFiltroPreco produtosFiltroParams)
         {
-            var produtos = _unityOfWork.ProdutoRepository.GetProdutosFiltroPreco(produtosFiltroParams);
+            var produtos = await _unityOfWork.ProdutoRepository.GetProdutosFiltroPrecoAsync(produtosFiltroParams);
 
             return obterProdutos(produtos);
         }
 
 
         [HttpGet("paginacao")]
-        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutoParametros produtoPaginacao) 
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetAsyncAsync([FromQuery] ProdutoParametros produtoPaginacao) 
         {
-            var produtos = _unityOfWork.ProdutoRepository.GetProdutos(produtoPaginacao);
+            var produtos = await _unityOfWork.ProdutoRepository.GetProdutosAsync(produtoPaginacao);
 
             return obterProdutos(produtos);
         }
@@ -54,10 +54,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<ProdutoDTO>> Get()
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetAsync()
         {
-
-            var produtos = _unityOfWork.ProdutoRepository.GetAll();
+            var produtos = await _unityOfWork.ProdutoRepository.GetAllAsync();
 
             if (produtos is null)
             {
@@ -70,9 +69,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id:int}", Name = "ObterProduto")]
-        public ActionResult<ProdutoDTO> GetId(int? id)
+        public async Task<ActionResult<ProdutoDTO>> GetIdAsync(int? id)
         {
-            var produto = _unityOfWork.ProdutoRepository.Get(p => p.ProdutoId == id);
+            var produto = await _unityOfWork.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
 
             if (produto is null)
             {
@@ -85,9 +84,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("produto/{idCategoria:int}")]
-        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosPorCategoria(int idCategoria)
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosPorCategoria(int idCategoria)
         {
-            var produtos = _unityOfWork.ProdutoRepository.GetProdutosPorCategoria(idCategoria);
+            var produtos = await _unityOfWork.ProdutoRepository.GetProdutosPorCategoriaAsync(idCategoria);
 
             if(produtos is null)
             {
@@ -138,9 +137,9 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult<ProdutoDTO> Delete(int id)
+        public async Task<ActionResult<ProdutoDTO>> DeleteAsync(int id)
         {
-            var produto = _unityOfWork.ProdutoRepository.Get(p => p.ProdutoId == id);
+            var produto = await _unityOfWork.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
 
             if (produto is null)
             {
