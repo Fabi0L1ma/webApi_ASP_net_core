@@ -46,8 +46,9 @@ builder.Services.AddScoped<ApiLoggingFilter>();
 
 //}));
 
-builder.Services.AddAuthentication();
-builder.Services.AddAuthentication("Bearer").AddJwtBearer();
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer();
 
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
@@ -65,10 +66,9 @@ if (app.Environment.IsDevelopment())
 
     app.ConfigureExceptionHandler();
 }
-
-app.UseHttpsRedirection();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
