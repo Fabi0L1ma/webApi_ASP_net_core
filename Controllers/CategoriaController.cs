@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using WebApi.DTOs;
 using WebApi.Filters;
@@ -54,6 +55,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [ServiceFilter(typeof(ApiLoggingFilter))]
         public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAsync()
         {
@@ -80,7 +82,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<CategoriaDTO> Post(CategoriaDTO categoriaDTO)
+        public async Task<ActionResult<CategoriaDTO>> Post(CategoriaDTO categoriaDTO)
         {
             if (categoriaDTO is null)
             {
@@ -91,7 +93,7 @@ namespace WebApi.Controllers
 
             var categoriaCriada = _unityOfWork.CategoriaRepository.Create(categoria);
 
-            _unityOfWork.Commit();
+            await _unityOfWork.Commit();
 
             var novaCategoriaDTO = categoriaCriada.ToCategoriaDTO();
 
