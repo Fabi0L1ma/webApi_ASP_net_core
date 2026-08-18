@@ -1,12 +1,10 @@
 using WebApi.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System.Security.Cryptography.Xml;
 using System.Text.Json.Serialization;
 using WebApi.Extensao;
 using WebApi.Filters;
-using WebApi.Logging;
 using WebApi.Repository;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +43,8 @@ builder.Services.AddScoped<ApiLoggingFilter>();
 //    logLevel = LogLevel.Information
 
 //}));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication("Bearer")
